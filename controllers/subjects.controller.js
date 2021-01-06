@@ -1,4 +1,4 @@
-const Subject = require("../models/subject");
+const { Subject } = require("../models/subject");
 
 // create subject
 const createSubject = async (req, res) => {
@@ -13,7 +13,8 @@ const createSubject = async (req, res) => {
     //check for subject
     const exists = await Subject.find({ name: name });
 
-    if (subject) {
+    console.log(exists);
+    if (exists.length > 0) {
       return res
         .status(409)
         .json({ message: "subject already exist", success: false });
@@ -26,7 +27,8 @@ const createSubject = async (req, res) => {
     subject.save();
     // success
     return res
-      .json(201)
+      .location("/subjects/" + subject._id)
+      .status(201)
       .json({ message: "Successfully created", success: true });
   } catch (error) {
     console.log(error);
@@ -47,9 +49,18 @@ const updateSubject = async (req, res) => {
     }
 
     //check for subject
-    await Subject.findByIdAndUpdate(req.params._id, {
-      name,
-    });
+    // await Subject.findByIdAndUpdate(req.params._id, {
+    //   name,
+    // });
+    const question = await Subject.findById(req.params.id);
+    if (!question) {
+      return res
+        .status(404)
+        .json({ message: "question does not exist", success: false });
+    }
+
+    question.name = name;
+    await question.save;
 
     return res.status(201).json({ message: "question updated", success: true });
   } catch (error) {
@@ -60,10 +71,19 @@ const updateSubject = async (req, res) => {
   }
 };
 
+// delete subject
 const deleteSubject = async (req, res) => {
-  const { _id } = req.params;
+  const { id } = req.params;
   try {
-    await Subject.findByIdAndDelete(_id);
+    const subject = Subject.findById(id);
+    if (!subject) {
+      return res
+        .status(404)
+        .json({ message: "subject not found", success: false });
+    }
+
+    const status = await Subject.deleteOne(subject);
+
     return res.status(200).json({ message: "question deleted", success: true });
   } catch (error) {
     console.log(error);
@@ -76,7 +96,7 @@ const deleteSubject = async (req, res) => {
 // get one subject
 const getOneSubject = async (req, res) => {
   try {
-    const subject = await Subject.findById(req.params.id);
+    const subject = await Subject.findById(req.params.id).populate("questions");
     return res.status(200).json({ subject, success: "true" });
   } catch (error) {
     console.log(error);
@@ -89,7 +109,7 @@ const getOneSubject = async (req, res) => {
 // get all subjects
 const getAllSubjects = async (req, res) => {
   try {
-    const subjects = await Subject.find({});
+    const subjects = await Subject.find({}).populate("questions");
     return res.status(200).json({ subjects, success: "true" });
   } catch (error) {
     console.log(error);

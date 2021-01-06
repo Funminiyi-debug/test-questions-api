@@ -7,7 +7,7 @@ const QuestionSchema = new mongoose.Schema(
       ref: "Subject",
       required: true,
     },
-    alternative: [
+    alternatives: [
       {
         text: { type: String, required: true },
         isCorrect: { type: Boolean, required: true, default: false },

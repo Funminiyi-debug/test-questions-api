@@ -1,5 +1,5 @@
 const Question = require("../models/question");
-const Subject = require("../models/subject");
+const { Subject } = require("../models/subject");
 
 const createQuestion = async (req, res) => {
   const { description, subjectId, alternatives } = req.body;
@@ -21,20 +21,26 @@ const createQuestion = async (req, res) => {
 
     let question = await Question.create({
       description,
-      subjectId,
-      alternatives,
+      subject: subjectId,
     });
 
-    question.save();
+    // add alternatives
+    alternatives.forEach((alternative) => {
+      question.alternatives.push(alternative);
+    });
+
+    await question.save();
 
     // const subject = await Subject.findById(subjectId);
 
     // push question to subject bank
     subject.questions.push(question);
+    await subject.save();
 
     // success
     return res
-      .json(201)
+      .location("/questions/" + question._id)
+      .status(201)
       .json({ message: "Successfully created", success: true });
   } catch (error) {
     console.log(error);
@@ -61,11 +67,28 @@ const updateQuestion = async (req, res) => {
         .status(404)
         .json({ message: "subject does not exist", success: false });
     }
-    await Question.findByIdAndUpdate(req.params._id, {
-      description,
-      subjectId,
-      alternatives,
+
+    // await Question.findByIdAndUpdate(req.params._id, {
+    //   description,
+    //   subjectId,
+    //   alternatives: [...alternatives],
+    // });
+
+    // find the question to update
+    const question = await Question.findById(req.params.id);
+    if (!question) {
+      return res
+        .status(404)
+        .json({ message: "question does not exist", success: false });
+    }
+
+    question.description = description;
+    question.subject = subjectId;
+    alternatives.forEach((alternative) => {
+      question.alternatives = alternatives;
     });
+
+    await question.save();
 
     return res.status(201).json({ message: "question updated", success: true });
   } catch (error) {
@@ -77,9 +100,15 @@ const updateQuestion = async (req, res) => {
 };
 
 const deleteQuestion = async (req, res) => {
-  const { _id } = req.params;
+  const { id } = req.params;
   try {
-    await Question.findByIdAndDelete(_id);
+    const question = Question.findById(id);
+    if (!question) {
+      return res
+        .status(404)
+        .json({ message: "question not found", success: false });
+    }
+    await Question.findByIdAndDelete(id);
     return res.status(200).json({ message: "question deleted", success: true });
   } catch (error) {
     console.log(error);
@@ -91,7 +120,12 @@ const deleteQuestion = async (req, res) => {
 
 const getOneQuestion = async (req, res) => {
   try {
-    const question = await Question.findById(req.params.id);
+    const question = await Question.findById(req.params.id).populate("subject");
+    if (!question) {
+      return res
+        .status(404)
+        .json({ message: "question not found", success: false });
+    }
     return res.status(200).json({ question, success: "true" });
   } catch (error) {
     console.log(error);
@@ -103,7 +137,7 @@ const getOneQuestion = async (req, res) => {
 
 const getAllQuestions = async (req, res) => {
   try {
-    const questions = await Question.find({});
+    const questions = await Question.find({}).populate("subject");
     return res.status(200).json({ questions, success: "true" });
   } catch (error) {
     console.log(error);
