@@ -4,7 +4,8 @@
   "description": "api for the test questions vuejs project",
   "main": "index.js",
   "scripts": {
-    "test": "npm start"
+    "test": "npm start",
+    "dev" : "nodemon index"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.11.10"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
   }
 }
