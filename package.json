@@ -1,0 +1,23 @@
+{
+  "name": "test-questions-api",
+  "version": "1.0.0",
+  "description": "api for the test questions vuejs project",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Funminiyi-debug/test-questions-api.git"
+  },
+  "keywords": [
+    "api",
+    "vuejs"
+  ],
+  "author": "Funminiyi Anwo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Funminiyi-debug/test-questions-api/issues"
+  },
+  "homepage": "https://github.com/Funminiyi-debug/test-questions-api#readme"
+}
