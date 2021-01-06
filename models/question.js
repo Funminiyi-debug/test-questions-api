@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
 const QuestionSchema = new mongoose.Schema(
   {
-    description: { type: String },
-    subject: { type: mongoose.SchemaTypes.ObjectId, ref: "Subject" },
+    description: { type: String, required: true },
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subject",
+      required: true,
+    },
     alternative: [
       {
         text: { type: String, required: true },
