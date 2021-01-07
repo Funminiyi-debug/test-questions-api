@@ -1,27 +1,28 @@
 const Question = require("../models/question");
 const { Subject } = require("../models/subject");
+const Passage = require("../models/passage");
 
 const createQuestion = async (req, res) => {
-  const { description, subjectId, alternatives } = req.body;
+  const { description, subjectId, alternatives, passageid } = req.body;
   try {
-    if (!description || !subjectId || alternatives.length == 0) {
+    if (!description || !subjectId || alternatives.length == 0 || !passageid) {
       return res
         .status(400)
         .json({ message: "all fields must be filled", success: false });
     }
 
     //check for subject
-    const subject = await Subject.findById(subjectId);
+    const passage = await Passage.findById(passageid);
 
-    if (!subject) {
+    if (!passage) {
       return res
         .status(404)
-        .json({ message: "subject does not exist", success: false });
+        .json({ message: "passage does not exist", success: false });
     }
 
     let question = await Question.create({
       description,
-      subject: subjectId,
+      passage: passageid,
     });
 
     // add alternatives
@@ -34,8 +35,8 @@ const createQuestion = async (req, res) => {
     // const subject = await Subject.findById(subjectId);
 
     // push question to subject bank
-    subject.questions.push(question);
-    await subject.save();
+    passage.questions.push(question);
+    await passage.save();
 
     // success
     return res
@@ -51,21 +52,21 @@ const createQuestion = async (req, res) => {
 };
 
 const updateQuestion = async (req, res) => {
-  const { description, subjectId, alternatives } = req.body;
+  const { description, passageid, alternatives } = req.body;
   try {
-    if (!description || !subjectId || !alternatives) {
+    if (!description || !subjectId || alternatives.length == 0 || !passageid) {
       return res
         .status(400)
         .json({ message: "all fields must be filled", success: false });
     }
 
     //check for subject
-    const subject = await Subject.findById(subjectId);
+    const passage = await Passage.findById(subjectId);
 
-    if (!subject) {
+    if (!passage) {
       return res
         .status(404)
-        .json({ message: "subject does not exist", success: false });
+        .json({ message: "passage does not exist", success: false });
     }
 
     // await Question.findByIdAndUpdate(req.params._id, {
@@ -83,7 +84,7 @@ const updateQuestion = async (req, res) => {
     }
 
     question.description = description;
-    question.subject = subjectId;
+    question.passage = passageid;
     alternatives.forEach((alternative) => {
       question.alternatives = alternatives;
     });
@@ -120,7 +121,7 @@ const deleteQuestion = async (req, res) => {
 
 const getOneQuestion = async (req, res) => {
   try {
-    const question = await Question.findById(req.params.id).populate("subject");
+    const question = await Question.findById(req.params.id).populate("passage");
     if (!question) {
       return res
         .status(404)
@@ -137,7 +138,7 @@ const getOneQuestion = async (req, res) => {
 
 const getAllQuestions = async (req, res) => {
   try {
-    const questions = await Question.find({}).populate("subject");
+    const questions = await Question.find({}).populate("passage");
     return res.status(200).json({ questions, success: "true" });
   } catch (error) {
     console.log(error);

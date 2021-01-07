@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const QuestionSchema = new mongoose.Schema(
   {
     description: { type: String, required: true },
-    subject: {
+    passage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Subject",
+      ref: "Passage",
       required: true,
     },
     alternatives: [
@@ -13,6 +13,7 @@ const QuestionSchema = new mongoose.Schema(
         isCorrect: { type: Boolean, required: true, default: false },
       },
     ],
+    isViewed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

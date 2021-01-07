@@ -60,7 +60,7 @@ const updateSubject = async (req, res) => {
     }
 
     question.name = name;
-    await question.save;
+    await question.save();
 
     return res.status(201).json({ message: "question updated", success: true });
   } catch (error) {
@@ -84,7 +84,9 @@ const deleteSubject = async (req, res) => {
 
     const status = await Subject.deleteOne(subject);
 
-    return res.status(200).json({ message: "question deleted", success: true });
+    return res
+      .status(200)
+      .json({ message: "question deleted", status, success: true });
   } catch (error) {
     console.log(error);
     res
@@ -96,7 +98,7 @@ const deleteSubject = async (req, res) => {
 // get one subject
 const getOneSubject = async (req, res) => {
   try {
-    const subject = await Subject.findById(req.params.id).populate("questions");
+    const subject = await Subject.findById(req.params.id).populate("passages");
     return res.status(200).json({ subject, success: "true" });
   } catch (error) {
     console.log(error);
@@ -109,7 +111,7 @@ const getOneSubject = async (req, res) => {
 // get all subjects
 const getAllSubjects = async (req, res) => {
   try {
-    const subjects = await Subject.find({}).populate("questions");
+    const subjects = await Subject.find({}).populate("passages");
     return res.status(200).json({ subjects, success: "true" });
   } catch (error) {
     console.log(error);
