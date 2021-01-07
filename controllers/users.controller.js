@@ -61,7 +61,7 @@ const addUser = async (req, res) => {
 
 const addSubjectToUser = async (req, res) => {
   const { name, email, subject } = req.body;
-  if (!name || !email) {
+  if (!name || !email || subject.length == 0) {
     return res.status(400).json({
       message: "all required fields must be filled",
       success: false,

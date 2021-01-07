@@ -25,16 +25,16 @@ const createPassage = async (req, res) => {
         .json({ message: "passage already exist", success: false });
     }
 
-    let passage = await Passage.create({
+    let passageToSave = await Passage.create({
       passagename,
       passage,
       subject: subjectid,
     });
 
-    passage.save();
+    passageToSave.save();
     // success
     return res
-      .location("/passages/" + passage._id)
+      .location("/passages/" + passageToSave._id)
       .status(201)
       .json({ message: "Successfully created", success: true });
   } catch (error) {
@@ -59,11 +59,12 @@ const updatePassage = async (req, res) => {
     if (!subject) {
       return res.status(404).json({ message: "subject not found" });
     }
+    const passageToUpdate = await Passage.findById(req.params.id);
 
-    passage.passage = passage;
-    passage.passagename = passagename;
-    passage.subject = subjectid;
-    await passage.save();
+    passageToUpdate.passage = passage;
+    passageToUpdate.passagename = passagename;
+    passageToUpdate.subject = subjectid;
+    await passageToUpdate.save();
 
     return res.status(201).json({ message: "passage updated", success: true });
   } catch (error) {
@@ -101,7 +102,9 @@ const deletePassage = async (req, res) => {
 // get one subject
 const getOnePassage = async (req, res) => {
   try {
-    const passage = await Passage.findById(req.params.id).populate("questions");
+    const passage = await Passage.findById(req.params.id)
+      .populate("questions")
+      .populate("subject");
     return res.status(200).json({ passage, success: "true" });
   } catch (error) {
     console.log(error);
@@ -114,7 +117,9 @@ const getOnePassage = async (req, res) => {
 // get all subjects
 const getAllPassages = async (req, res) => {
   try {
-    const passages = await Passage.find({}).populate("questions");
+    const passages = await Passage.find({})
+      .populate("questions")
+      .populate("subject");
     return res.status(200).json({ passages, success: "true" });
   } catch (error) {
     console.log(error);
