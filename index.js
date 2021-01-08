@@ -1,15 +1,24 @@
 const express = require("express");
-const path = require("path");
 const dotenv = require("dotenv");
 const app = express();
 // dotenv use
 dotenv.config({ path: "./secrets/.env" });
-const PORT = 2000 || process.env.PORT;
+const PORT = process.env.PORT;
 
 require("./config/db")();
 
+// {
+// origin: "http://localhost:8080/",
+// optionsSuccessStatus: true,
+// }
+app.use(require("cors")());
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log(`${req.protocol}://${req.hostname}${req.url}`);
+  next();
+});
 
 // routes
 app.use("/api/questions", require("./routes/questions.route"));

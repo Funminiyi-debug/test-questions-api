@@ -21,7 +21,9 @@ const getUser = async (req, res) => {
 
 const addUser = async (req, res) => {
   const { name, email, subjects } = req.body;
+  console.log(req.body);
 
+  console.log(name, email, subjects);
   if (!name || !email) {
     return res.status(400).json({
       message: "all required fields must be filled",
@@ -30,7 +32,7 @@ const addUser = async (req, res) => {
   }
   try {
     const exists = await User.find({ name, email });
-    if (exists) {
+    if (exists.length > 0) {
       return res
         .status(409)
         .json({ message: "user already exist", success: false });
@@ -41,9 +43,11 @@ const addUser = async (req, res) => {
       email,
     });
 
-    subjects.forEach((subject) => {
-      user.subjects.push(subject);
-    });
+    if (subjects) {
+      subjects.forEach((subject) => {
+        user.subjects.push(subject);
+      });
+    }
 
     await user.save();
 

@@ -33,7 +33,11 @@ const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    subjects: [subjectSchema],
+    // subjects: [subjectSchema],
+
+    subject: { type: mongoose.Schema.Types.ObjectId, required: true },
+    passage: { type: mongoose.Schema.Types.ObjectId, required: true },
+    question: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   { timestamps: true }
 );
