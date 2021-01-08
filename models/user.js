@@ -34,10 +34,26 @@ const UserSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
     // subjects: [subjectSchema],
-
-    subject: { type: mongoose.Schema.Types.ObjectId, required: true },
-    passage: { type: mongoose.Schema.Types.ObjectId, required: true },
-    question: { type: mongoose.Schema.Types.ObjectId, required: true },
+    subjects: [
+      {
+        subject: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "subject",
+        },
+        passage: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "passage",
+        },
+        question: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "question",
+        },
+        userAnswer: { type: mongoose.Schema.Types.ObjectId, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );
