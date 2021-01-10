@@ -32,20 +32,26 @@ const DO = async () => {
       //   add the question
       await newQuestion2.save();
 
-      //  add question to passage
-      passage.questions.push(newQuestion1);
-      passage.questions.push(newQuestion2);
+      const newQuestion3 = new Question({
+        ...questionsData[2],
+        passage: passage._id,
+      });
 
-      console.log(
-        "question 1 " + newQuestion1 + " for passage " + passage.passagename
-      );
-      "question 1 " + newQuestion2 + " for passage " + passage.passagename;
+      //   add the question
+      await newQuestion3.save();
+
+      //  add question to passage
+
+      passage.questions = [
+        newQuestion1,
+        newQuestion2,
+        newQuestion3,
+        ...passage.questions,
+      ];
 
       const status = await passage.save();
-
-      console.log(status.name);
-      process.exit(1);
     });
+    // process.exit(1);
   } catch (error) {
     console.log(error);
   }

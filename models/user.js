@@ -7,24 +7,29 @@ const alternativeSchema = new mongoose.Schema({
   },
 });
 
-const questionSchema = new mongoose.Schema({
-  description: {
-    type: String,
-    required: true,
-  },
-  alternatives: [alternativeSchema],
-});
+// const questionSchema = new mongoose.Schema({
+//   description: {
+//     type: String,
+//     required: true,
+//   },
+//   alternatives: [alternativeSchema],
+// });
 
-const passageSchema = new mongoose.Schema({
-  passage: { type: String, required: true },
-  passagename: { type: String, required: true },
-  questions: [questionSchema],
-});
+// const passageSchema = new mongoose.Schema({
+//   passage: { type: String, required: true },
+//   passagename: { type: String, required: true },
+//   questions: [questionSchema],
+// });
 
 const subjectSchema = new mongoose.Schema({
-  subject: { type: String, required: true },
+  subject: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Subject",
+  },
   score: { type: Number, required: true, default: 0 },
-  answers: [passageSchema],
+  answers: { type: mongoose.Schema.Types.Array },
+  counter: { type: String },
 });
 
 subjectSchema.virtual("noOfQuestionsAnswered").get(() => this.answers.length);
@@ -33,26 +38,27 @@ const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    // subjects: [subjectSchema],
+    password: { type: String, required: true },
     subjects: [
-      {
-        subject: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-          ref: "subject",
-        },
-        passage: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-          ref: "passage",
-        },
-        question: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-          ref: "question",
-        },
-        userAnswer: { type: mongoose.Schema.Types.ObjectId, required: true },
-      },
+      subjectSchema,
+      // {
+      //   subject: {
+      //     type: mongoose.Schema.Types.ObjectId,
+      //     required: true,
+      //     ref: "subject",
+      //   },
+      //   passage: {
+      //     type: mongoose.Schema.Types.ObjectId,
+      //     required: true,
+      //     ref: "passage",
+      //   },
+      //   question: {
+      //     type: mongoose.Schema.Types.ObjectId,
+      //     required: true,
+      //     ref: "question",
+      //   },
+      //   userAnswer: { type: String, required: true },
+      // },
     ],
   },
   { timestamps: true }

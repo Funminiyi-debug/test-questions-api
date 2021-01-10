@@ -3,6 +3,7 @@ const { Subject } = require("../models/subject");
 // create subject
 const createSubject = async (req, res) => {
   const { name } = req.body;
+  console.log(req.body);
   try {
     if (!name) {
       return res

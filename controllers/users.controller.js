@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 // get all users
 const getAllUsers = async (req, res) => {
@@ -16,75 +17,81 @@ const getUser = async (req, res) => {
       .json({ message: "user does not exist", success: false });
   }
 
-  return res.status(200).json({ user, success: true });
+  const response = {
+    email: user.email,
+    subjects: user.subjects,
+    name: user.name,
+  };
+  return res.status(200).json({ user: response, success: true });
 };
 
 const addUser = async (req, res) => {
-  const { name, email, subjects } = req.body;
-  console.log(req.body);
-
-  console.log(name, email, subjects);
-  if (!name || !email) {
-    return res.status(400).json({
-      message: "all required fields must be filled",
-      success: false,
-    });
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    res
+      .status(400)
+      .json({ message: "all required fields must be filled", success: false });
   }
-  try {
-    const exists = await User.find({ name, email });
-    if (exists.length > 0) {
-      return res
-        .status(409)
-        .json({ message: "user already exist", success: false });
-    }
 
-    const user = await User.create({
-      name,
-      email,
-    });
-
-    if (subjects) {
-      subjects.forEach((subject) => {
-        user.subjects.push(subject);
-      });
-    }
-
-    await user.save();
-
+  const exists = await User.findOne({ name, email });
+  if (exists) {
     return res
-      .status(201)
-      .location("/users/" + user._id)
-      .json({ success: true, user });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json({ message: "Something happened with the server", success: false });
+      .status(409)
+      .json({ message: "User already exists", success: false });
   }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = new User({ name, email, password: hashedPassword });
+
+  await user.save();
+  const tosend = {
+    name: user.name,
+    email: user.email,
+    subjects: user.subjects,
+  };
+  return res.status(201).json({ user: tosend, success: true });
 };
 
 const addSubjectToUser = async (req, res) => {
-  const { name, email, subject } = req.body;
-  if (!name || !email || subject.length == 0) {
+  const { subject, name, email } = req.body;
+  console.log(req.body);
+
+  const user = await User.findOne({ name, email });
+
+  // const user = req.user;
+
+  if (!user) {
+    return res
+      .status(401)
+      .json({ message: "you have to be logged in", success: false });
+  }
+
+  if (!subject || !subject.subject) {
     return res.status(400).json({
-      message: "all required fields must be filled",
+      message: "subject cannot be null",
       success: false,
     });
   }
   try {
-    const user = await User.find({ name, email });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "user does not exist", success: false });
-    }
+    // const user = await User.findById(userId);
+    // if (!user) {
+    //   return res
+    //     .status(404)
+    //     .json({ message: "user does not exist", success: false });
+    // }
 
     user.subjects.push(subject);
     await user.save();
 
+    const tosend = {
+      name: user.name,
+      email: user.email,
+      subjects: user.subjects.sort((a, b) => a.updatedAt > b.updatedAt),
+    };
     return res
       .status(200)
-      .json({ user, message: "subject added", success: true });
+      .json({ user: tosend, message: "subject added", success: true });
   } catch (error) {
     console.log(error);
     return res

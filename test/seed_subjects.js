@@ -20,6 +20,7 @@ try {
     added += 1;
     console.log(status.name + " created");
   });
+  process.exit(1);
 } catch (error) {
   console.log(error);
 }

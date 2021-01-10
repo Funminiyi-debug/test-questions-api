@@ -1,10 +1,10 @@
 const Passage = require("../models/passage");
 
 const subjectIds = [
-  { subject: "Chemistry/Physics", id: "5ff6dc15cca00e2cd0484aa1" },
-  { subject: "Biology/Biochemistry", id: "5ff6dc15cca00e2cd0484aa1" },
-  { subject: "CARS", id: "5ff6dc15cca00e2cd0484aa3" },
-  { subject: "Psychology/Sociology", id: "5ff6dc15cca00e2cd0484aa4" },
+  { subject: "Chemistry/Physics", id: "5ff9707004ae603cf40a39b3" },
+  { subject: "Biology/Biochemistry", id: "5ff9707004ae603cf40a39b4" },
+  { subject: "CARS", id: "5ff9707004ae603cf40a39b5" },
+  { subject: "Psychology/Sociology", id: "5ff9707004ae603cf40a39b6" },
 ];
 
 // PASSAGES

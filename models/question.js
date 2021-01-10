@@ -9,7 +9,7 @@ const QuestionSchema = new mongoose.Schema(
     },
     alternatives: [
       {
-        text: { type: String /*required: true*/ },
+        text: { type: String, required: true },
         isCorrect: { type: Boolean, required: true, default: false },
       },
     ],

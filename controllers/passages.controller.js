@@ -31,7 +31,12 @@ const createPassage = async (req, res) => {
       subject: subjectid,
     });
 
-    passageToSave.save();
+    await passageToSave.save();
+
+    subject.push(passageToSave);
+
+    await subject.save();
+
     // success
     return res
       .location("/passages/" + passageToSave._id)
@@ -105,7 +110,7 @@ const getOnePassage = async (req, res) => {
     const passage = await Passage.findById(req.params.id)
       .populate("questions")
       .populate("subject");
-    return res.status(200).json({ passage, success: "true" });
+    return res.status(200).json({ passage, success: true });
   } catch (error) {
     console.log(error);
     res
@@ -120,7 +125,7 @@ const getAllPassages = async (req, res) => {
     const passages = await Passage.find({})
       .populate("questions")
       .populate("subject");
-    return res.status(200).json({ passages, success: "true" });
+    return res.status(200).json({ passages, success: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -130,10 +135,39 @@ const getAllPassages = async (req, res) => {
   }
 };
 
+const getPassagesBySubject = async (req, res) => {
+  const subjectid = req.params.subjectid;
+  if (!subjectid) {
+    return res
+      .status(400)
+      .json({ message: "subject cannot be empty", success: false });
+  }
+  try {
+    const passages = await Passage.find({ subject: subjectid })
+      .populate("questions")
+      .populate("alternatives");
+
+    console.log(passages);
+    if (passages.length == 0) {
+      return res.status(404).json({
+        message: "passages not found for that subject",
+        success: false,
+      });
+    }
+    return res.status(200).json({ passages, success: true });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "something happened with the server", success: false });
+  }
+};
+
 module.exports = {
   createPassage,
   updatePassage,
   deletePassage,
   getAllPassages,
   getOnePassage,
+  getPassagesBySubject,
 };

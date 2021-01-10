@@ -16,4 +16,6 @@ router.delete("/:id", passages.deletePassage);
 //create one question
 router.post("/", passages.createPassage);
 
+router.get("/get-by-subject/:subjectid", passages.getPassagesBySubject);
+
 module.exports = router;
