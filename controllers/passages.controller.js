@@ -163,6 +163,21 @@ const getPassagesBySubject = async (req, res) => {
   }
 };
 
+const addManyPassagesToSubject = async (req, res) => {
+  const { passages } = req.body;
+  try {
+    const response = await Passage.create([...passages]);
+
+    console.log(response);
+    res.status(200).json({ response, success: true });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "something happened with the server", success: false });
+  }
+};
+
 module.exports = {
   createPassage,
   updatePassage,
@@ -170,4 +185,5 @@ module.exports = {
   getAllPassages,
   getOnePassage,
   getPassagesBySubject,
+  addManyPassagesToSubject,
 };

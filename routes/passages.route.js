@@ -18,4 +18,6 @@ router.post("/", passages.createPassage);
 
 router.get("/get-by-subject/:subjectid", passages.getPassagesBySubject);
 
+router.post("/add-many-passages", passages.addManyPassagesToSubject);
+
 module.exports = router;

@@ -10,9 +10,19 @@ const PassageSchema = new mongoose.Schema(
     },
     questions: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Question",
-        required: true,
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: "Question",
+        // required: true,
+
+        description: { type: String, required: true },
+
+        alternatives: [
+          {
+            text: { type: String, required: true },
+            isCorrect: { type: Boolean, required: true, default: false },
+          },
+        ],
+        isViewed: { type: Boolean, default: false },
       },
     ],
     isViewed: { type: Boolean, required: true, default: false },
