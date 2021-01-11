@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 // get all users
 const getAllUsers = async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate("subject");
   return res.json({ users });
 };
 

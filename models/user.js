@@ -39,27 +39,7 @@ const UserSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    subjects: [
-      subjectSchema,
-      // {
-      //   subject: {
-      //     type: mongoose.Schema.Types.ObjectId,
-      //     required: true,
-      //     ref: "subject",
-      //   },
-      //   passage: {
-      //     type: mongoose.Schema.Types.ObjectId,
-      //     required: true,
-      //     ref: "passage",
-      //   },
-      //   question: {
-      //     type: mongoose.Schema.Types.ObjectId,
-      //     required: true,
-      //     ref: "question",
-      //   },
-      //   userAnswer: { type: String, required: true },
-      // },
-    ],
+    subjects: [subjectSchema],
   },
   { timestamps: true }
 );
