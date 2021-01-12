@@ -13,11 +13,10 @@ router.put("/:id", passages.updatePassage);
 // delete one question
 router.delete("/:id", passages.deletePassage);
 
+router.post("/add-many-passages", passages.addManyPassagesToSubject);
 //create one question
 router.post("/", passages.createPassage);
 
 router.get("/get-by-subject/:subjectid", passages.getPassagesBySubject);
-
-router.post("/add-many-passages", passages.addManyPassagesToSubject);
 
 module.exports = router;
