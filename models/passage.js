@@ -30,6 +30,7 @@ const PassageSchema = new mongoose.Schema(
           },
         ],
         isViewed: { type: Boolean, default: false },
+        answerExplanation: { type: String },
       },
     ],
     isViewed: { type: Boolean, required: true, default: false },

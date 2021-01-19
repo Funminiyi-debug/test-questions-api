@@ -149,7 +149,6 @@ const getPassagesBySubject = async (req, res) => {
       .populate("questions")
       .populate("alternatives");
 
-    console.log(passages);
     if (passages.length == 0) {
       return res.status(404).json({
         message: "passages not found for that subject",
@@ -168,6 +167,9 @@ const getPassagesBySubject = async (req, res) => {
 const addManyPassagesToSubject = async (req, res) => {
   const { passages } = req.body;
   try {
+    passages.forEach((passage) => {
+      passage.forEach((question) => console.log(question));
+    });
     const response = await Passage.create([...passages]);
 
     console.log(response);
@@ -205,7 +207,6 @@ const addImagesToPassage = async (req, res) => {
     // });
     const passage = await Passage.findById(id);
     passage.passageImages = [...passageImages];
-    console.log(passage);
     await passage.save();
 
     res.status(200).json({
