@@ -3,8 +3,13 @@ const bcrypt = require("bcrypt");
 
 // get all users
 const getAllUsers = async (req, res) => {
-  const users = await User.find({}).populate("subject");
-  return res.json({ users });
+  try {
+    const users = await User.find({}).populate("subject");
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false });
+  }
 };
 
 // add one user by id
@@ -55,7 +60,7 @@ const addUser = async (req, res) => {
 
 const addSubjectToUser = async (req, res) => {
   const { subject, name, email } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
 
   const user = await User.findOne({ name, email });
 
@@ -100,9 +105,21 @@ const addSubjectToUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const operation = await User.findByIdAndDelete(id);
+    res.status(200).json({ message: "User deleted", success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false });
+  }
+};
+
 module.exports = {
   addUser,
   getAllUsers,
   getUser,
   addSubjectToUser,
+  deleteUser,
 };

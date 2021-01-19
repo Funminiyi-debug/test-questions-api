@@ -1,5 +1,7 @@
 const Passage = require("../models/passage");
 const { Subject } = require("../models/subject");
+const fs = require("fs");
+const path = require("path");
 // create passage
 const createPassage = async (req, res) => {
   try {
@@ -91,11 +93,11 @@ const deletePassage = async (req, res) => {
         .json({ message: "passage not found", success: false });
     }
 
-    const status = await Passage.deleteOne(subject);
+    const status = await Passage.deleteOne(passage);
 
     return res
       .status(200)
-      .json({ message: "question deleted", status, success: true });
+      .json({ message: "passage deleted", status, success: true });
   } catch (error) {
     console.log(error);
     res
@@ -166,6 +168,11 @@ const getPassagesBySubject = async (req, res) => {
 const addManyPassagesToSubject = async (req, res) => {
   const { passages } = req.body;
   try {
+    passages.forEach((passage) => {
+      passage.questions.forEach((question) => {
+        console.log(question.userExplanation);
+      });
+    });
     const response = await Passage.create([...passages]);
 
     console.log(response);
@@ -178,6 +185,44 @@ const addManyPassagesToSubject = async (req, res) => {
   }
 };
 
+const addImagesToPassage = async (req, res) => {
+  const id = req.params.passageid;
+  try {
+    const passageImages = req.files.map((file) => {
+      return {
+        name: file.filename,
+        data: fs.readFileSync(
+          path.resolve(
+            __dirname,
+            "../uploads/" + file.filename
+            // "-" +
+            // Date.now() +
+            // "." +
+            // file.mimetype.split("/")[1]
+          )
+        ),
+        contentType: file.mimetype,
+      };
+    });
+
+    // const passage = await Passage.findByIdAndUpdate(id, {
+    //   passageImages: [...passageImages],
+    // });
+    const passage = await Passage.findById(id);
+    passage.passageImages = [...passageImages];
+    console.log(passage);
+    await passage.save();
+
+    res.status(200).json({
+      message: "images uploaded",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false });
+  }
+};
+
 module.exports = {
   createPassage,
   updatePassage,
@@ -186,4 +231,5 @@ module.exports = {
   getOnePassage,
   getPassagesBySubject,
   addManyPassagesToSubject,
+  addImagesToPassage,
 };

@@ -3,6 +3,13 @@ const PassageSchema = new mongoose.Schema(
   {
     passage: { type: String, required: true },
     passagename: { type: String, required: true },
+    passageImages: [
+      {
+        name: String,
+        data: Buffer,
+        contentType: String,
+      },
+    ],
     subject: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subject",

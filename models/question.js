@@ -14,6 +14,7 @@ const QuestionSchema = new mongoose.Schema(
       },
     ],
     isViewed: { type: Boolean, default: false },
+    answerExplanation: { type: String },
   },
   { timestamps: true }
 );
