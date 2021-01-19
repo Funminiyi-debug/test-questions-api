@@ -168,11 +168,6 @@ const getPassagesBySubject = async (req, res) => {
 const addManyPassagesToSubject = async (req, res) => {
   const { passages } = req.body;
   try {
-    passages.forEach((passage) => {
-      passage.questions.forEach((question) => {
-        console.log(question.userExplanation);
-      });
-    });
     const response = await Passage.create([...passages]);
 
     console.log(response);
