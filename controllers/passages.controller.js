@@ -169,7 +169,7 @@ const addManyPassagesToSubject = async (req, res) => {
   try {
     passages.forEach((passage) => {
       console.log(passage);
-      // passage.forEach((question) => console.log(question));
+      passage.questions.forEach((question) => console.log(question));
     });
     const response = await Passage.create([...passages]);
 
