@@ -4,19 +4,17 @@ const app = express();
 const passport = require("passport");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
+const bodyParser = require("body-parser");
 // dotenv use
 dotenv.config({ path: "./secrets/.env" });
 const PORT = process.env.PORT;
 
 require("./config/db")();
 
-// {
-// origin: "http://localhost:8080/",
-// optionsSuccessStatus: true,
-// }
+app.use(require("cors")());
 app.use(require("cookie-parser")(process.env.SECRETS));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(bodyParser.json({ limit: "50mb" }));
 
 require("./config/passport_config")(passport);
 
@@ -30,7 +28,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(require("cors")());
 
 // logger
 app.use((req, res, next) => {
