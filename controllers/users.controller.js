@@ -25,11 +25,15 @@ const saveProgress = async (req, res) => {
       });
     }
 
-    const subjectExists = Subject.find(subject.subject);
+    // const subjectExists = await Subject.find(subject.subject);
+
+    const subjectExists = user.subjectsSaved.find(
+      (element) => element.subject == subject.subject
+    );
 
     if (subjectExists) {
       user.subjectsSaved = user.subjectsSaved.filter(
-        (subject) => subject._id != subjectExists._id
+        (subject) => subject.subject != subjectExists.subject
       );
     }
 
@@ -131,13 +135,15 @@ const addSubjectToUser = async (req, res) => {
     });
   }
   try {
-    // const user = await User.findById(userId);
-    // if (!user) {
-    //   return res
-    //     .status(404)
-    //     .json({ message: "user does not exist", success: false });
-    // }
+    const subjectExists = user.subjects.find(
+      (element) => element.subject == subject.subject
+    );
 
+    if (subjectExists) {
+      user.subjects = user.subjects.filter(
+        (element) => element.subject != subjectExists.subject
+      );
+    }
     user.subjects.push(subject);
     await user.save();
 

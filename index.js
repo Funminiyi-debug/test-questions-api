@@ -30,6 +30,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(require("cors")());
 
 // logger
 app.use((req, res, next) => {
@@ -37,7 +38,6 @@ app.use((req, res, next) => {
   console.log("logger area", req.user);
   next();
 });
-app.use(require("cors")());
 
 // routes
 app.post("/api/login", passport.authenticate("local"), async (req, res) => {
