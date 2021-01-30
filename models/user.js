@@ -7,20 +7,6 @@ const alternativeSchema = new mongoose.Schema({
   },
 });
 
-// const questionSchema = new mongoose.Schema({
-//   description: {
-//     type: String,
-//     required: true,
-//   },
-//   alternatives: [alternativeSchema],
-// });
-
-// const passageSchema = new mongoose.Schema({
-//   passage: { type: String, required: true },
-//   passagename: { type: String, required: true },
-//   questions: [questionSchema],
-// });
-
 const subjectSchema = new mongoose.Schema({
   subject: {
     type: mongoose.Schema.Types.ObjectId,
@@ -40,6 +26,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true },
     password: { type: String, required: true },
     subjects: [subjectSchema],
+    subjectsSaved: { type: mongoose.Schema.Types.Array },
   },
   { timestamps: true }
 );

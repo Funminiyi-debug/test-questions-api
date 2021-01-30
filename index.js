@@ -61,6 +61,7 @@ app.use("/api/questions", require("./routes/questions.route"));
 app.use("/api/subjects", require("./routes/subjects.route"));
 app.use("/api/passages", require("./routes/passages.route"));
 app.use("/api/users", require("./routes/users.route"));
+app.use("/api/dashboard", require("./routes/dashboard.route"));
 
 app.use("*", (req, res) => {
   res.status(404).json({ message: "doesn't exist" });

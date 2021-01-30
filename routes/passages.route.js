@@ -21,7 +21,7 @@ router.get("/get-by-subject/:subjectid", passages.getPassagesBySubject);
 
 router.post(
   "/add-images/:passageid",
-  require("../config/multer").array("passageImages", 5),
+  require("../config/multer").single("passageImages"),
   passages.addImagesToPassage
 );
 

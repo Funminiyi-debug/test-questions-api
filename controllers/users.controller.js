@@ -1,5 +1,57 @@
 const User = require("../models/user");
+const { Subject } = require("../models/subject");
 const bcrypt = require("bcrypt");
+
+//  save current progress
+const saveProgress = async (req, res) => {
+  try {
+    const { subject, name, email } = req.body;
+    // console.log(req.body);
+
+    const user = await User.findOne({ name, email });
+
+    // const user = req.user;
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you have to be logged in", success: false });
+    }
+
+    if (!subject || !subject.subject) {
+      return res.status(400).json({
+        message: "subject to save cannot be null",
+        success: false,
+      });
+    }
+
+    const subjectExists = Subject.find(subject.subject);
+
+    if (subjectExists) {
+      user.subjectsSaved = user.subjectsSaved.filter(
+        (subject) => subject._id != subjectExists._id
+      );
+    }
+
+    user.subjectsSaved.push(subject);
+    await user.save();
+
+    const tosend = {
+      name: user.name,
+      email: user.email,
+      subjectsSaved: user.subjectsSaved.sort(
+        (a, b) => a.updatedAt > b.updatedAt
+      ),
+    };
+
+    return res
+      .status(200)
+      .json({ user: tosend, message: "subject added", success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false });
+  }
+};
 
 // get all users
 const getAllUsers = async (req, res) => {
@@ -122,4 +174,5 @@ module.exports = {
   getUser,
   addSubjectToUser,
   deleteUser,
+  saveProgress,
 };
