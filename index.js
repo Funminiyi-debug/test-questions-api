@@ -5,8 +5,10 @@ const passport = require("passport");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
+const morgan = require("morgan");
 // dotenv use
 dotenv.config({ path: "./secrets/.env" });
+
 const PORT = process.env.PORT;
 
 require("./config/db")();
@@ -16,6 +18,11 @@ app.use(require("cookie-parser")(process.env.SECRETS));
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
+app.use(
+  morgan(
+    ":method :url status_code :status :res[content-length] - :response-time ms"
+  )
+);
 require("./config/passport_config")(passport);
 
 app.use(
@@ -28,13 +35,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-// logger
-app.use((req, res, next) => {
-  console.log(`${req.protocol}://${req.hostname}${req.url}`);
-  console.log("logger area", req.user);
-  next();
-});
 
 // routes
 app.post("/api/login", passport.authenticate("local"), async (req, res) => {

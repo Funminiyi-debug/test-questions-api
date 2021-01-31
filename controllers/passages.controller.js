@@ -199,20 +199,11 @@ const addManyPassagesToSubject = async (req, res) => {
 const addImagesToPassage = async (req, res) => {
   const id = req.params.passageid;
   const file = req.file;
+  const title = req.body.passageTitle;
   try {
     const passageImages = {
-      name: file.filename,
-      data: fs.readFileSync(
-        path.resolve(
-          __dirname,
-          "../uploads/" +
-            file.filename +
-            "-" +
-            Date.now() +
-            "." +
-            file.mimetype.split("/")[1]
-        )
-      ),
+      name: title,
+      data: fs.readFileSync(path.resolve(__dirname, "../", file.path)),
       contentType: file.mimetype,
     };
 
@@ -220,7 +211,7 @@ const addImagesToPassage = async (req, res) => {
     //   passageImages: [...passageImages],
     // });
     const passage = await Passage.findById(id);
-    passage.passageImages = [...passageImages];
+    passage.passageImages = [...passage.passageImages, passageImages];
     await passage.save();
 
     res.status(200).json({
