@@ -26,17 +26,25 @@ const saveProgress = async (req, res) => {
     }
 
     // const subjectExists = await Subject.find(subject.subject);
-
-    const subjectExists = user.subjectsSaved.find(
-      (element) => element.subject == subject.subject
-    );
-
-    if (subjectExists) {
-      user.subjectsSaved = user.subjectsSaved.filter(
-        (subject) => subject.subject != subjectExists.subject
+    if (user.subjectsSaved.length > 0) {
+      const subjectExists = user.subjectsSaved.find(
+        (element) => element.subject._id.valueOf() == subject.subject
       );
-    }
 
+      console.log("at conditional", subjectExists);
+
+      if (subjectExists) {
+        user.subjectsSaved = user.subjectsSaved.filter(
+          (element) => !element.subject._id.equals(subjectExists.subject._id)
+        );
+      }
+    }
+    console.log("subject.subject", subject.subject);
+    const subjectId = subject.subject;
+
+    subject.subject = await Subject.findOne({ _id: subjectId });
+    console.log("the subject has changed to", subject.subject);
+    console.log("the full subject", subject);
     user.subjectsSaved.push(subject);
     await user.save();
 
@@ -61,6 +69,7 @@ const saveProgress = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).populate("subject");
+
     return res.status(200).json({ users });
   } catch (error) {
     console.log(error);
@@ -135,15 +144,25 @@ const addSubjectToUser = async (req, res) => {
     });
   }
   try {
-    const subjectExists = user.subjects.find(
-      (element) => element.subject == subject.subject
-    );
-
-    if (subjectExists) {
-      user.subjects = user.subjects.filter(
-        (element) => element.subject != subjectExists.subject
+    if (user.subjects.length > 0) {
+      const subjectExists = user.subjects.find(
+        (element) => element.subject._id.valueOf() == subject.subject
       );
+
+      console.log("at conditional", subjectExists);
+
+      if (subjectExists) {
+        user.subjects = user.subjects.filter(
+          (element) => !element.subject._id.equals(subjectExists.subject._id)
+        );
+      }
     }
+    console.log("subject.subject", subject.subject);
+    const subjectId = subject.subject;
+
+    subject.subject = await Subject.findOne({ _id: subjectId });
+    console.log("the subject has changed to", subject.subject);
+    console.log("the full subject", subject);
     user.subjects.push(subject);
     await user.save();
 

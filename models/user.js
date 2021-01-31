@@ -9,9 +9,8 @@ const alternativeSchema = new mongoose.Schema({
 
 const subjectSchema = new mongoose.Schema({
   subject: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "Subject",
+    name: String,
+    _id: mongoose.Schema.Types.ObjectId,
   },
   score: { type: Number, required: true, default: 0 },
   answers: { type: mongoose.Schema.Types.Array },

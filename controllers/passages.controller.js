@@ -2,6 +2,7 @@ const Passage = require("../models/passage");
 const { Subject } = require("../models/subject");
 const fs = require("fs");
 const path = require("path");
+const { pseudoRandomBytes } = require("crypto");
 // create passage
 const createPassage = async (req, res) => {
   try {
@@ -155,7 +156,15 @@ const getPassagesBySubject = async (req, res) => {
         success: false,
       });
     }
-    return res.status(200).json({ passages, success: true });
+
+    const subjectName = await Subject.find({ _id: subjectid });
+    passages.subject = subjectName;
+
+    const response = {
+      passages,
+      subject: subjectName,
+    };
+    return res.status(200).json({ response, success: true });
   } catch (error) {
     console.log(error);
     return res
@@ -168,6 +177,12 @@ const addManyPassagesToSubject = async (req, res) => {
   const { passages } = req.body;
   try {
     const response = await Passage.create([...passages]);
+
+    passages.forEach(async (passage) => {
+      const theSubject = await Subject.find({ _id: passage.subject });
+      theSubject.passages.push(passage);
+      await theSubject.save();
+    });
 
     response.forEach((response) => {
       response.questions.forEach((question) => console.log(question));
