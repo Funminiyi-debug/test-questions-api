@@ -45,19 +45,7 @@ const getpercentageCorrectPerSubject = (allUsers, allSubjects) => {
       .map((user) => {
         return [
           ...user.subjects.map((userSubject) => {
-            // console.log(`
-            //   ===========================
-            //   user: ${user.name}
-            //   subject: ${userSubject.subject}
-            //   currentSubjectLoop: ${subject._id}
-            //   =========================
-            //   `);
             if (subject.name == userSubject.subject.name) {
-              // console.log(`
-              // ===========================
-              // conditional ran because ${subject} id is the same as ${userSubject}
-              // =========================
-              // `);
               return userSubject.score;
             }
           }),
@@ -68,12 +56,66 @@ const getpercentageCorrectPerSubject = (allUsers, allSubjects) => {
       .reduce((total, a) => total + a, 0)
       .toFixed(2);
 
+    payload.timeTaken = allUsers
+      .map((user) => {
+        return [
+          ...user.subjects.map((userSubject) => {
+            if (subject.name == userSubject.subject.name) {
+              return userSubject.counter;
+            }
+          }),
+        ];
+      })
+      .flat(Infinity)
+      .filter((value) => value != undefined)
+      .map((current) => {
+        const time = current.split(":");
+        const hours = parseInt(time[0]);
+        const mins = parseInt(time[1]);
+        const seconds = parseInt(time[2]);
+        return { hours, mins, seconds };
+      });
+    const timeTakenLength = payload.timeTaken.length;
+    payload.timeTaken = payload.timeTaken.reduce(
+      (accm, current) => {
+        accm.hours += current.hours;
+        accm.mins += current.mins;
+        accm.seconds += current.seconds;
+        return accm;
+      },
+      { hours: 0, mins: 0, seconds: 0 }
+    );
+
+    console.log("time taken", payload.timeTaken);
+
+    payload.timeTaken.hours /= timeTakenLength;
+    payload.timeTaken.mins /= timeTakenLength;
+    payload.timeTaken.seconds /= timeTakenLength;
+
+    // check for nan
+    if (Number.isNaN(payload.timeTaken.hours)) {
+      payload.timeTaken.hours = 0;
+    }
+    if (Number.isNaN(payload.timeTaken.mins)) {
+      payload.timeTaken.mins = 0;
+    }
+    if (Number.isNaN(payload.timeTaken.seconds)) {
+      payload.timeTaken.seconds = 0;
+    }
+
+    payload.timeTaken = `${structureTime(
+      payload.timeTaken.hours
+    )}:${structureTime(payload.timeTaken.mins)}:${structureTime(
+      payload.timeTaken.seconds
+    )}`;
+
     if (Number.isNaN(payload.scores)) {
       payload.scores = 0;
       payload.scores = payload.scores.toFixed(2);
     }
     return payload;
   });
+
   return perSubject;
 };
 
