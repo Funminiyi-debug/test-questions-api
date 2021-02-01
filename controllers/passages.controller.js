@@ -140,6 +140,8 @@ const getAllPassages = async (req, res) => {
 
 const getPassagesBySubject = async (req, res) => {
   const subjectid = req.params.subjectid;
+  const count = req.query;
+
   if (!subjectid) {
     return res
       .status(400)
@@ -159,11 +161,16 @@ const getPassagesBySubject = async (req, res) => {
 
     const subjectName = await Subject.find({ _id: subjectid });
     passages.subject = subjectName;
+    let response = {};
+    if (count != undefined) {
+      response = { count: passages.length, subject: subjectName };
+    } else {
+      response = {
+        passages,
+        subject: subjectName,
+      };
+    }
 
-    const response = {
-      passages,
-      subject: subjectName,
-    };
     return res.status(200).json({ response, success: true });
   } catch (error) {
     console.log(error);
