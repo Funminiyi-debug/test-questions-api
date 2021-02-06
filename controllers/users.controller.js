@@ -119,6 +119,7 @@ const addUser = async (req, res) => {
     name: user.name,
     email: user.email,
     subjects: user.subjects,
+    subjectsSaved: user.subjectsSaved,
   };
   return res.status(201).json({ user: tosend, success: true });
 };
