@@ -6,6 +6,11 @@ const SubjectSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+SubjectSchema.pre("remove", function (next) {
+  Passage.remove({ subject: this._id }).exec();
+  next();
+});
 exports.subjectSchema = SubjectSchema;
 exports.Subject = mongoose.model("Subject", SubjectSchema);
 // module.exports = mongoose.model("Subject", SubjectSchema);
