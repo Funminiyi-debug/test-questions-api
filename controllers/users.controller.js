@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const { Subject } = require("../models/subject");
 const bcrypt = require("bcrypt");
+const { restart } = require("nodemon");
 
 //  save current progress
 const saveProgress = async (req, res) => {
@@ -79,8 +80,10 @@ const getAllUsers = async (req, res) => {
 
 // add one user by id
 const getUser = async (req, res) => {
-  const { name, email } = req.query;
-  const user = await User.find({ name: name, email: email });
+  // const { name, email } = req.query;
+  const userId = req.params.userId;
+  console.log(userId);
+  const user = await User.findById(userId);
   if (!user) {
     return res
       .status(404)
@@ -88,11 +91,11 @@ const getUser = async (req, res) => {
   }
 
   const response = {
-    email: user.email,
-    subjects: user.subjects,
-    name: user.name,
+    ...user,
+    password: undefined,
   };
-  return res.status(200).json({ user: response, success: true });
+
+  return res.status(200).json({ user: user, success: true });
 };
 
 const addUser = async (req, res) => {
@@ -116,6 +119,7 @@ const addUser = async (req, res) => {
 
   await user.save();
   const tosend = {
+    _id: user._id,
     name: user.name,
     email: user.email,
     subjects: user.subjects,
@@ -150,24 +154,22 @@ const addSubjectToUser = async (req, res) => {
         (element) => element.subject._id.valueOf() == subject.subject
       );
 
-      console.log("at conditional", subjectExists);
-
       if (subjectExists) {
         user.subjects = user.subjects.filter(
           (element) => !element.subject._id.equals(subjectExists.subject._id)
         );
       }
     }
-    console.log("subject.subject", subject.subject);
+
     const subjectId = subject.subject;
 
     subject.subject = await Subject.findOne({ _id: subjectId });
-    console.log("the subject has changed to", subject.subject);
-    console.log("the full subject", subject);
+
     user.subjects.push(subject);
     await user.save();
 
     const tosend = {
+      _id: user._id,
       name: user.name,
       email: user.email,
       subjects: user.subjects.sort((a, b) => a.updatedAt > b.updatedAt),
@@ -194,6 +196,43 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { oldPassword, newPassword, newPassword2, email } = req.body;
+  if (!oldPassword || !newPassword || !newPassword2 || !email) {
+    return res
+      .status(422)
+      .json({ message: "Please fill all fields", success: false });
+  }
+  if (newPassword != newPassword2) {
+    return res
+      .status(422)
+      .json({ message: "Credentials do not match", success: false });
+  }
+  try {
+    const user = await User.findOne({ email });
+    console.log("reset password", user);
+    if (!user)
+      return res
+        .status(404)
+        .json({ message: "Credentials do not match", success: false });
+
+    const oldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!oldPasswordMatch)
+      return res
+        .status(404)
+        .json({ message: "Credentials do not match", success: false });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await User.findByIdAndUpdate(user._id, user, { new: true });
+
+    return res.status(204).json({ message: "Updated!", success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server Error", success: false });
+  }
+};
+
 module.exports = {
   addUser,
   getAllUsers,
@@ -201,4 +240,5 @@ module.exports = {
   addSubjectToUser,
   deleteUser,
   saveProgress,
+  resetPassword,
 };

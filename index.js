@@ -38,9 +38,11 @@ app.use(passport.session());
 
 // routes
 app.post("/api/login", passport.authenticate("local"), async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  console.log("this is you!", user);
+  const user = await User.findOne({
+    email: req.body.email.toLowerCase().trim(),
+  });
   const tosend = {
+    _id: user._id,
     name: user.name,
     email: user.email,
     subjects: user.subjects,
