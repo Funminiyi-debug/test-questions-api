@@ -1,7 +1,6 @@
 const User = require("../models/user");
 const { Subject } = require("../models/subject");
 const bcrypt = require("bcrypt");
-const { restart } = require("nodemon");
 
 //  save current progress
 const saveProgress = async (req, res) => {
